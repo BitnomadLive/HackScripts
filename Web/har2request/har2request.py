@@ -9,7 +9,7 @@ import json
 
 
 
-def construct_python_code(python_script: str, request_url: str, request_method: str,request_header: dict) -> str:
+def construct_python_code(python_script: str, request_url: str, request_method: str,request_header: dict, post_data: dict) -> str:
     """construct python code for every individual request
 
     Args:
@@ -21,12 +21,15 @@ def construct_python_code(python_script: str, request_url: str, request_method: 
     Returns:
       Generated python script for a request as a string
 
-    """  
+    """ 
 
-    #change to list and join
+    request_header = json.dumps(request_header, sort_keys=True, indent=4) 
+    post_data = json.dumps(post_data, sort_keys=True, indent=4) 
+
     python_script += f'url = "{request_url}"\n'
     python_script += f'headers = {request_header}\n'
-    python_script += f'r=r.{request_method.lower()}(url,headers=headers)\n\n'
+    python_script += f'post_data = {post_data}\n'
+    python_script += f'r = requests.{request_method.lower()}(url,headers=headers, data=post_data)\n\n'
     return python_script
 
 
@@ -59,10 +62,15 @@ def har_to_python(input_file: BufferedReader) -> str:
       for header in entry['request']['headers']:
         request_header[header['name']] = header['value']
 
-     
+      post_data = {}
+      try:
+          for param in entry['request']['postData']['params']:
+            post_data[param['name']] = param['value']
+      except:
+        pass
 
       #print(request_header)
-      python_script = construct_python_code(python_script, request_url, request_method, request_header)
+      python_script = construct_python_code(python_script, request_url, request_method, request_header, post_data)
       
     print(python_script)
 
