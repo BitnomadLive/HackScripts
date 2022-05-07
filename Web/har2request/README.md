@@ -11,3 +11,4 @@ Project is still work in progress
 To export a HAR archive from your browser, just switch to the network tab of the developers tools, right click
 and select "Save All As HAR"
 
+![Firefox export](https://raw.githubusercontent.com/BitnomadLive/HackScripts/main/Web/har2request/images/firefox_har_export.jpg)
